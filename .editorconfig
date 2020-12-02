@@ -1,3 +1,10 @@
 root = true
 
-[*]
+[pom.xml]
+indent_style=tab
+
+[gemma-core/pom.xml]
+indent_style=tab
+
+[gemma-web/etc/conf/jetty.xml]
+indent_style=tab
