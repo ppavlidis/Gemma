@@ -263,6 +263,13 @@
             <artifactId>gemma-gsec</artifactId>
             <version>0.0.2</version>
             <type>jar</type>
+            <exclusions>
+                <!-- we're using Servlet API 3.1.0 -->
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.googlecode.javaewah</groupId>
@@ -336,12 +343,6 @@
             <version>1.1</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>obo</groupId>
             <artifactId>obo</artifactId>
             <version>1.002</version>
@@ -380,6 +381,11 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>ognl</groupId>

@@ -299,33 +299,23 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
-			<scope>provided</scope>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.1.2</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
 			<version>1.1.2</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>jetty</groupId>
-			<artifactId>org.mortbay.jetty</artifactId>
-			<version>5.1.12</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -467,6 +457,12 @@
 					<artifactId>spring-aop</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- Tomcat -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
