@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gemma.gsec.SecurityService;
+import org.springframework.transaction.annotation.Transactional;
 import ubic.gemma.core.analysis.preprocess.batcheffects.BatchInfoPopulationServiceImpl;
 import ubic.gemma.core.analysis.service.ExpressionDataFileService;
 import ubic.gemma.core.datastructure.matrix.ExpressionDataDoubleMatrix;
@@ -102,6 +103,7 @@ public class SplitExperimentServiceImpl implements SplitExperimentService {
      * expression.experiment.ExpressionExperiment, ubic.gemma.model.expression.experiment.ExperimentalFactor)
      */
     @Override
+    @Transactional
     public Collection<ExpressionExperiment> split( ExpressionExperiment toSplit, ExperimentalFactor splitOn ) {
 
         toSplit = eeService.thawLite( toSplit );
