@@ -45,6 +45,7 @@
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager"
 		lazy-init="true">
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="nestedTransactionAllowed" value="true" />
 	</bean>
 
 	<tx:annotation-driven order="3" />
@@ -103,7 +104,7 @@
 				<value>classpath:ubic/gemma/model/expression/biomaterial/BioMaterial.hbm.xml</value>
 				<value>classpath:ubic/gemma/model/expression/biomaterial/Treatment.hbm.xml</value>
 				<value>classpath:ubic/gemma/model/expression/biomaterial/Compound.hbm.xml</value>
- 				<value>classpath:ubic/gemma/model/association/Gene2GOAssociation.hbm.xml</value>
+				<value>classpath:ubic/gemma/model/association/Gene2GOAssociation.hbm.xml</value>
 				<value>classpath:ubic/gemma/model/association/BioSequence2GeneProduct.hbm.xml</value>
 				<value>classpath:ubic/gemma/model/association/coexpression/HumanExperimentCoexpressionLink.hbm.xml
 				</value>

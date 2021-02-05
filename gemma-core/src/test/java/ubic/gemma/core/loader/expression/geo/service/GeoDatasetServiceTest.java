@@ -322,7 +322,7 @@ public class GeoDatasetServiceTest extends AbstractGeoServiceTest {
         ee = this.eeService.thawLite( ee );
         Collection<QuantitationType> qts = eeService.getQuantitationTypes( ee );
         assertEquals( 1, qts.size() );
-        geeqService.calculateScore( ee.getId(), GeeqService.OPT_MODE_ALL );
+        geeqService.calculateScore( ee, GeeqService.OPT_MODE_ALL );
 
     }
 
@@ -424,7 +424,7 @@ public class GeoDatasetServiceTest extends AbstractGeoServiceTest {
     }
 
     @SuppressWarnings("unused")
-    // !! Please leave this here, we use it to load data sets for chopping.
+        // !! Please leave this here, we use it to load data sets for chopping.
     ExpressionExperiment fetchASeries( String accession ) {
         geoService.setGeoDomainObjectGenerator( new GeoDomainObjectGenerator() );
         return ( ExpressionExperiment ) geoService.fetchAndLoad( accession, false, false, false ).iterator().next();

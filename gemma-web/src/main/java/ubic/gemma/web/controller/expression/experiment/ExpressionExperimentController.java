@@ -640,7 +640,8 @@ public class ExpressionExperimentController {
     }
 
     public void runGeeq( Long id, String mode ) {
-        geeqService.calculateScore( id, mode );
+        ExpressionExperiment ee = expressionExperimentService.load( id );
+        geeqService.calculateScore( ee, mode );
     }
 
     public void setGeeqManualSettings( long id, GeeqAdminValueObject vo ) {

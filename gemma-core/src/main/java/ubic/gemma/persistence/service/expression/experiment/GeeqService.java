@@ -19,6 +19,7 @@
 
 package ubic.gemma.persistence.service.expression.experiment;
 
+import ubic.gemma.model.expression.experiment.ExpressionExperiment;
 import ubic.gemma.model.expression.experiment.Geeq;
 import ubic.gemma.model.expression.experiment.GeeqAdminValueObject;
 import ubic.gemma.model.expression.experiment.GeeqValueObject;
@@ -32,11 +33,10 @@ public interface GeeqService extends BaseVoEnabledService<Geeq, GeeqValueObject>
 
     /**
      * Calculates the GEEQ score in the given mode for the experiment with the given id.
-     *
-     * @param eeId the id of the experiment to calculate the scores for.
+     *  @param ee the id of the experiment to calculate the scores for.
      * @param mode either run all scores, or only re-score batch effect, batch confound or replicates.
      */
-    void calculateScore( Long eeId, String mode );
+    void calculateScore( ExpressionExperiment ee, String mode );
 
     /**
      * Reads manual override info from the given GEEQ Value Object and stores them with the experiment

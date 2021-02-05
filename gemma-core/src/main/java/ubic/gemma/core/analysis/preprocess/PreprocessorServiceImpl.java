@@ -20,9 +20,10 @@ import java.util.LinkedList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ubic.gemma.core.analysis.expression.diff.DifferentialExpressionAnalyzerService;
 import ubic.gemma.core.analysis.preprocess.batcheffects.ExpressionExperimentBatchCorrectionService;
 import ubic.gemma.core.analysis.preprocess.svd.SVDServiceHelper;
@@ -110,13 +111,15 @@ public class PreprocessorServiceImpl implements PreprocessorService {
     private GeeqService geeqService;
 
     @Override
+    @Transactional
     public ExpressionExperiment process( ExpressionExperiment ee ) throws PreprocessingException {
 
         ee = expressionExperimentService.thaw( ee );
 
         try {
             this.removeInvalidatedData( ee );
-            this.processForMissingValues( ee );
+            // FIXME: this causes a NoSuchElementException when run in a transaction
+            // this.processForMissingValues( ee );
             processedExpressionDataVectorService.computeProcessedExpressionData( ee );
             ee = this.processExceptForVectorCreate( ee, true );
             expressionExperimentReportService.recalculateExperimentBatchInfo( ee );
@@ -206,7 +209,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
      * Checks all the given expression experiments bio assays for outlier flags and returns them in a collection
      *
      * @param  ee the expression experiment to be checked
-     * @return    a collection of outlier details that contains all the outliers that the expression experiment is aware
+     * @return a collection of outlier details that contains all the outliers that the expression experiment is aware
      *            of.
      */
     private Collection<OutlierDetails> getAlreadyKnownOutliers( ExpressionExperiment ee ) {
@@ -225,6 +228,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
     private ExpressionExperiment processExceptForVectorCreate( ExpressionExperiment ee, Boolean batchCorrect ) {
         // refresh into context.
         ee = expressionExperimentService.thawLite( ee );
+        expressionExperimentService.update( ee );
 
         assert ee.getNumberOfDataVectors() != null;
 
@@ -236,6 +240,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
                 log.error( e.getMessage() );
                 log.warn( "Batch correction skipped, proceeding with experiment preprocessing..." );
             }
+            expressionExperimentService.update( ee );
         }
 
         /*
@@ -243,6 +248,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
          */
         Collection<DifferentialExpressionAnalysis> oldAnalyses = differentialExpressionAnalysisService
                 .findByInvestigation( ee );
+        expressionExperimentService.update( ee );
 
         if ( !oldAnalyses.isEmpty() ) {
 
@@ -255,6 +261,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
                             .error( "Could not redo analysis: " + " " + copyMe + ": " + e.getMessage() );
                 }
             }
+            expressionExperimentService.update( ee );
         }
 
         processDiagnostics( ee );
@@ -266,13 +273,17 @@ public class PreprocessorServiceImpl implements PreprocessorService {
 
     /**
      * @param ee
+     * @return
      */
     @Override
+    @Transactional
     public void processDiagnostics( ExpressionExperiment ee ) {
         this.processForSampleCorrelation( ee );
         this.processForMeanVarianceRelation( ee );
         this.processForPca( ee );
-        geeqService.calculateScore( ee.getId(), GeeqService.OPT_MODE_ALL); 
+        // FIXME: calculateScore is duplicating the EE itself
+        // this.processforGeeqScore( ee, GeeqService.OPT_MODE_ALL );
+        expressionExperimentService.update( ee );
         // FIXME OPT_MODE_ALL is overkill, but none of the options currently address the exact need. No big deal.
     }
 
@@ -310,8 +321,12 @@ public class PreprocessorServiceImpl implements PreprocessorService {
         try {
             svdService.svd( ee );
         } catch ( Exception e ) {
-            PreprocessorServiceImpl.log.error( "SVD could not be performed: " + e.getMessage() );
+            PreprocessorServiceImpl.log.error( "SVD could not be performed: " + e.getMessage(), e );
         }
+    }
+
+    void processforGeeqScore( ExpressionExperiment ee, String mode ) {
+        geeqService.calculateScore( ee, mode );
     }
 
     /**
@@ -368,7 +383,7 @@ public class PreprocessorServiceImpl implements PreprocessorService {
     /**
      *
      * @param  ee
-     * @return    processed data vectors; if they don't exist, create them. They will be thawed in either case.
+     * @return processed data vectors; if they don't exist, create them. They will be thawed in either case.
      */
     private Collection<ProcessedExpressionDataVector> getProcessedExpressionDataVectors( ExpressionExperiment ee ) {
         Collection<ProcessedExpressionDataVector> vecs = processedExpressionDataVectorService

@@ -14,7 +14,6 @@
  */
 package ubic.gemma.core.analysis.preprocess;
 
-import org.springframework.stereotype.Service;
 import ubic.gemma.model.expression.experiment.ExpressionExperiment;
 
 /**
@@ -51,7 +50,7 @@ public interface PreprocessorService {
     /**
      * Create or update the sample correlation, PCA and M-V data. This is also done as part of process so should only be
      * called if only a refresh is needed.
-     * 
+     *
      * @param ee to be processed
      */
     void processDiagnostics( ExpressionExperiment ee );

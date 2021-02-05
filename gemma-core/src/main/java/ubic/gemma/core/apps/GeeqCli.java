@@ -102,7 +102,7 @@ public class GeeqCli extends ExpressionExperimentManipulatingCLI {
             }
 
             try {
-                geeqService.calculateScore( ee.getId(), mode );
+                geeqService.calculateScore( ee, mode );
                 addSuccessObject( ee, "Successfully processed " + ee );
             } catch ( Exception e ) {
                 addErrorObject( ee, " failed: " + e.getMessage(), e );

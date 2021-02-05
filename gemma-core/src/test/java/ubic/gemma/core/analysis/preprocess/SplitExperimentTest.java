@@ -99,7 +99,7 @@ public class SplitExperimentTest extends BaseSpringContextTest {
             experimentalDesignImporter.importDesign( ee, is );
         }
 
-        preprocessor.process( ee ); // to mimic real life better
+        ee = preprocessor.process( ee ); // to mimic real life better
 
         ExperimentalFactor splitOn = null;
         for ( ExperimentalFactor ef : ee.getExperimentalDesign().getExperimentalFactors() ) {

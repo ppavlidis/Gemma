@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ubic.basecode.dataStructure.matrix.DoubleMatrix;
 import ubic.basecode.math.CorrelationStats;
 import ubic.basecode.math.Distance;
@@ -140,7 +142,12 @@ public class SVDServiceHelperImpl implements SVDServiceHelper {
         }
     }
 
+    /**
+     * This is run in a within a nested transaction since to account for the exception raised when the matrix is not
+     * invertible.
+     */
     @Override
+    @Transactional(propagation = Propagation.NESTED)
     public SVDValueObject svd( ExpressionExperiment ee ) {
         assert ee != null;
 
@@ -150,6 +157,7 @@ public class SVDServiceHelperImpl implements SVDServiceHelper {
         if ( vectors.isEmpty() ) {
             throw new IllegalArgumentException( "Experiment must have processed data already to do SVD" );
         }
+        expressionExperimentService.update( ee );
 
         processedExpressionDataVectorService.thaw( vectors );
         ExpressionDataDoubleMatrix mat = new ExpressionDataDoubleMatrix( vectors );
@@ -167,8 +175,12 @@ public class SVDServiceHelperImpl implements SVDServiceHelper {
         BioAssayDimension b = mat.getBestBioAssayDimension();
 
         PrincipalComponentAnalysis pca = this.updatePca( ee, svd, v, b );
+        expressionExperimentService.update( ee );
 
-        return this.svdFactorAnalysis( pca );
+        SVDValueObject factorAnalysis = this.svdFactorAnalysis( pca );
+        expressionExperimentService.update( ee );
+        expressionExperimentService.update( ee );
+        return factorAnalysis;
     }
 
     @Override
