@@ -33,6 +33,7 @@ import ubic.gemma.core.datastructure.matrix.ExperimentalDesignWriter;
 import ubic.gemma.core.datastructure.matrix.ExpressionDataDoubleMatrix;
 import ubic.gemma.core.datastructure.matrix.ExpressionDataMatrix;
 import ubic.gemma.core.datastructure.matrix.MatrixWriter;
+import ubic.gemma.core.expression.experiment.ExpressionExperimentMetaFileType;
 import ubic.gemma.model.analysis.expression.diff.ContrastResult;
 import ubic.gemma.model.analysis.expression.diff.DifferentialExpressionAnalysis;
 import ubic.gemma.model.analysis.expression.diff.DifferentialExpressionAnalysisResult;
@@ -307,7 +308,7 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
 
         ExpressionDataFileServiceImpl.log
                 .info( "Creating differential expression analysis archive file: " + f.getName() );
-        try (ZipOutputStream zipOut = new ZipOutputStream( new FileOutputStream( f ) )) {
+        try ( ZipOutputStream zipOut = new ZipOutputStream( new FileOutputStream( f ) ) ) {
 
             // top-level analysis results - ANOVA-style
             zipOut.putNextEntry( new ZipEntry( "analysis.results.txt" ) );
@@ -340,6 +341,13 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
                 zipOut.closeEntry();
             }
         }
+    }
+
+    @Override
+    public File getMetadataFile( ExpressionExperiment ee, ExpressionExperimentMetaFileType type ) {
+        return new File(
+                ExpressionDataFileService.METADATA_DIR + this.getEEFolderName( ee ) + File.separatorChar + type
+                        .getFileName( ee ) );
     }
 
     @Override
@@ -619,7 +627,7 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
      * @param  forceWrite whether the file should be overridden even if found.
      * @param  f          the file to check.
      * @param  check      the file will be considered invalid after this date.
-     * @return            true, if the given file is ok to be returned, false if it should be regenerated.
+     * @return true, if the given file is ok to be returned, false if it should be regenerated.
      */
     private boolean checkFileOkToReturn( boolean forceWrite, File f, Date check ) {
         Date modified = new Date( f.lastModified() );
@@ -1050,7 +1058,7 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
         }
 
         // Write coexpression data to file (zipped of course)
-        try (Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) )) {
+        try ( Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) ) ) {
             writer.write( buf.toString() );
         }
 
@@ -1081,7 +1089,7 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
         OutputStream oStream;
         oStream = new GZIPOutputStream( new FileOutputStream( file ) );
 
-        try (Writer writer = new OutputStreamWriter( oStream )) {
+        try ( Writer writer = new OutputStreamWriter( oStream ) ) {
             ExperimentalDesignWriter edWriter = new ExperimentalDesignWriter();
             edWriter.write( writer, expressionExperiment, true );
         }
@@ -1091,14 +1099,14 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
     private void writeJson( File file, Collection<DesignElementDataVector> vectors ) throws IOException {
         this.rawExpressionDataVectorService.thawRawAndProcessed( vectors );
         ExpressionDataMatrix<?> expressionDataMatrix = ExpressionDataMatrixBuilder.getMatrix( vectors );
-        try (Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) )) {
+        try ( Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) ) ) {
             MatrixWriter matrixWriter = new MatrixWriter();
             matrixWriter.writeJSON( writer, expressionDataMatrix );
         }
     }
 
     private void writeJson( File file, ExpressionDataMatrix<?> expressionDataMatrix ) throws IOException {
-        try (Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) )) {
+        try ( Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) ) ) {
             MatrixWriter matrixWriter = new MatrixWriter();
             matrixWriter.writeJSON( writer, expressionDataMatrix );
         }
@@ -1116,11 +1124,11 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
         MatrixWriter matrixWriter = new MatrixWriter();
 
         if ( gzipped ) {
-            try (Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) )) {
+            try ( Writer writer = new OutputStreamWriter( new GZIPOutputStream( new FileOutputStream( file ) ) ) ) {
                 matrixWriter.writeWithStringifiedGeneAnnotations( writer, expressionDataMatrix, geneAnnotations, true );
             }
         } else {
-            try (Writer writer = new OutputStreamWriter( new FileOutputStream( file ) )) {
+            try ( Writer writer = new OutputStreamWriter( new FileOutputStream( file ) ) ) {
                 matrixWriter.writeWithStringifiedGeneAnnotations( writer, expressionDataMatrix, geneAnnotations, true );
             }
         }
@@ -1134,6 +1142,22 @@ public class ExpressionDataFileServiceImpl implements ExpressionDataFileService 
         ExpressionDataMatrix<?> expressionDataMatrix = ExpressionDataMatrixBuilder.getMatrix( vectors );
 
         this.writeMatrix( file, geneAnnotations, expressionDataMatrix );
+    }
+
+    /**
+     * Forms a folder name where the given experiments metadata will be located (within the {@link ExpressionDataFileService#METADATA_DIR} directory).
+     *
+     * @param ee the experiment to get the folder name for.
+     * @return folder name based on the given experiments properties. Usually this will be the experiments short name,
+     * without any splitting suffixes (e.g. for GSE123.1 the folder name would be GSE123). If the short name is empty for
+     * any reason, the experiments ID will be used.
+     */
+    private String getEEFolderName( ExpressionExperiment ee ) {
+        String sName = ee.getShortName();
+        if ( StringUtils.isBlank( sName ) ) {
+            return ee.getId().toString();
+        }
+        return sName.replaceAll( "\\.\\d+$", "" );
     }
 
 }
