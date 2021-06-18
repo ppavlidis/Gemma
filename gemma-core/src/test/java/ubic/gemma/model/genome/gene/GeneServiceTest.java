@@ -30,6 +30,7 @@ import ubic.gemma.model.genome.Chromosome;
 import ubic.gemma.model.genome.Gene;
 import ubic.gemma.model.genome.PhysicalLocation;
 import ubic.gemma.model.genome.Taxon;
+import ubic.gemma.persistence.persister.Persister;
 import ubic.gemma.persistence.service.common.description.ExternalDatabaseService;
 
 import java.util.ArrayList;
@@ -49,6 +50,9 @@ public class GeneServiceTest extends BaseSpringContextTest {
 
     @Autowired
     private GeneService geneDao = null;
+
+    @Autowired
+    private Persister<Chromosome> persisterHelper;
 
     @After
     public void tearDown() {
@@ -160,7 +164,7 @@ public class GeneServiceTest extends BaseSpringContextTest {
         gene.setTaxon( human );
         PhysicalLocation pl1 = PhysicalLocation.Factory.newInstance();
         Chromosome chromosome = new Chromosome( "X", null, this.getTestPersistentBioSequence(), human );
-        chromosome = ( Chromosome ) persisterHelper.persist( chromosome );
+        chromosome = persisterHelper.persist( chromosome );
         pl1.setChromosome( chromosome );
         pl1.setNucleotide( 10000010L );
         pl1.setNucleotideLength( 1001 );
@@ -180,7 +184,7 @@ public class GeneServiceTest extends BaseSpringContextTest {
         gene2.setTaxon( human );
         PhysicalLocation pl2 = PhysicalLocation.Factory.newInstance();
         Chromosome chromosome2 = new Chromosome( "Y", null, this.getTestPersistentBioSequence(), human );
-        chromosome2 = ( Chromosome ) persisterHelper.persist( chromosome2 );
+        chromosome2 = persisterHelper.persist( chromosome2 );
         pl2.setChromosome( chromosome2 );
         pl2.setChromosome( chromosome );
         pl2.setNucleotide( 10000010L );

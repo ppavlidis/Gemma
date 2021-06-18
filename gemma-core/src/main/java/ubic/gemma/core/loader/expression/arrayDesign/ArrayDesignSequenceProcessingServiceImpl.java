@@ -71,12 +71,12 @@ public class ArrayDesignSequenceProcessingServiceImpl implements ArrayDesignSequ
     private final ArrayDesignService arrayDesignService;
     private final BioSequenceService bioSequenceService;
     private final ExternalDatabaseService externalDatabaseService;
-    private final Persister persisterHelper;
+    private final Persister<BioSequence> persisterHelper;
 
     @Autowired
     public ArrayDesignSequenceProcessingServiceImpl( ArrayDesignReportService arrayDesignReportService,
             ArrayDesignService arrayDesignService, BioSequenceService bioSequenceService,
-            ExternalDatabaseService externalDatabaseService, Persister persisterHelper ) {
+            ExternalDatabaseService externalDatabaseService, Persister<BioSequence> persisterHelper ) {
         this.arrayDesignReportService = arrayDesignReportService;
         this.arrayDesignService = arrayDesignService;
         this.bioSequenceService = bioSequenceService;
@@ -939,7 +939,7 @@ public class ArrayDesignSequenceProcessingServiceImpl implements ArrayDesignSequ
      * If the sequence already exists
      */
     private BioSequence persistSequence( BioSequence sequence ) {
-        return ( BioSequence ) persisterHelper.persistOrUpdate( sequence );
+        return persisterHelper.persistOrUpdate( sequence );
     }
 
     /**

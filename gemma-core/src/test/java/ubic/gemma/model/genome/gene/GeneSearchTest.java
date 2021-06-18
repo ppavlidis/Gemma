@@ -27,6 +27,7 @@ import ubic.gemma.model.genome.Chromosome;
 import ubic.gemma.model.genome.Gene;
 import ubic.gemma.model.genome.PhysicalLocation;
 import ubic.gemma.model.genome.Taxon;
+import ubic.gemma.persistence.persister.Persister;
 
 import java.util.Collection;
 
@@ -39,6 +40,8 @@ public class GeneSearchTest extends BaseSpringContextTest {
 
     @Autowired
     private GeneService geneService = null;
+    @Autowired
+    private Persister<Chromosome> persisterHelper;
 
     @Test
     public void testSearchGenes() {
@@ -55,7 +58,7 @@ public class GeneSearchTest extends BaseSpringContextTest {
         PhysicalLocation pl1 = PhysicalLocation.Factory.newInstance();
         Chromosome chromosome = new Chromosome( "X", null, this.getTestPersistentBioSequence(), human );
 
-        chromosome = ( Chromosome ) persisterHelper.persist( chromosome );
+        chromosome = persisterHelper.persist( chromosome );
         pl1.setChromosome( chromosome );
         pl1.setNucleotide( 10000010L );
         pl1.setNucleotideLength( 1001 );

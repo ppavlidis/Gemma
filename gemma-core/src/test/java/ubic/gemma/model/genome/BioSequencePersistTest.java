@@ -23,10 +23,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ubic.gemma.core.util.test.BaseSpringContextTest;
 import ubic.gemma.model.common.description.DatabaseEntry;
 import ubic.gemma.model.common.description.ExternalDatabase;
 import ubic.gemma.model.genome.biosequence.BioSequence;
+import ubic.gemma.persistence.persister.Persister;
 import ubic.gemma.persistence.service.genome.biosequence.BioSequenceService;
 
 import static org.junit.Assert.assertNotNull;
@@ -38,6 +40,8 @@ import static org.junit.Assert.assertNotNull;
 public class BioSequencePersistTest extends BaseSpringContextTest {
 
     private BioSequence bs;
+    @Autowired
+    private Persister<BioSequence> persisterHelper;
 
     @Before
     public void onSetUpInTransaction() {
@@ -68,7 +72,7 @@ public class BioSequencePersistTest extends BaseSpringContextTest {
 
     @Test
     public final void testPersistBioSequence() {
-        bs = ( BioSequence ) persisterHelper.persist( bs );
+        bs = persisterHelper.persist( bs );
         assertNotNull( bs.getId() );
     }
 

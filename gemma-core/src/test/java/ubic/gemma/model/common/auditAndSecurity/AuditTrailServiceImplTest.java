@@ -1,8 +1,8 @@
 /*
  * The Gemma project
- * 
+ *
  * Copyright (c) 2007 University of British Columbia
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ubic.gemma.core.util.test.BaseSpringContextTest;
 import ubic.gemma.model.common.auditAndSecurity.eventType.*;
 import ubic.gemma.model.expression.arrayDesign.ArrayDesign;
+import ubic.gemma.persistence.persister.Persister;
 import ubic.gemma.persistence.service.common.auditAndSecurity.AuditTrailService;
 import ubic.gemma.persistence.service.expression.arrayDesign.ArrayDesignService;
 
@@ -48,6 +49,9 @@ public class AuditTrailServiceImplTest extends BaseSpringContextTest {
     @Autowired
     private ArrayDesignService arrayDesignService;
 
+    @Autowired
+    private Persister<ArrayDesign> persisterHelper;
+
     private int size;
 
     @Before
@@ -57,7 +61,7 @@ public class AuditTrailServiceImplTest extends BaseSpringContextTest {
         auditable.setName( "testing audit " + RandomStringUtils.randomAlphanumeric( 32 ) );
         auditable.setShortName( RandomStringUtils.randomAlphanumeric( 8 ) );
         auditable.setPrimaryTaxon( this.getTaxon( "human" ) );
-        auditable = ( ArrayDesign ) this.persisterHelper.persist( auditable );
+        auditable = this.persisterHelper.persist( auditable );
 
         assertTrue( auditable.getAuditTrail() != null );
 
