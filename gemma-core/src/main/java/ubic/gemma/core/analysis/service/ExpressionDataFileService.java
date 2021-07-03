@@ -15,6 +15,7 @@
 package ubic.gemma.core.analysis.service;
 
 import ubic.gemma.core.analysis.expression.diff.DifferentialExpressionAnalysisConfig;
+import ubic.gemma.core.expression.experiment.ExpressionExperimentMetaFileType;
 import ubic.gemma.model.analysis.expression.diff.DifferentialExpressionAnalysis;
 import ubic.gemma.model.analysis.expression.diff.DifferentialExpressionAnalysisResult;
 import ubic.gemma.model.analysis.expression.diff.ExpressionAnalysisResultSet;
@@ -199,4 +200,11 @@ public interface ExpressionDataFileService {
     void writeDiffExArchiveFile( BioAssaySet ee, DifferentialExpressionAnalysis analysis,
             DifferentialExpressionAnalysisConfig config ) throws IOException;
 
+    /**
+     * Locate a metadata file.
+     * @param ee
+     * @param type
+     * @return
+     */
+    File getMetadataFile( ExpressionExperiment ee, ExpressionExperimentMetaFileType type );
 }
